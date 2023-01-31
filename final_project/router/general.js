@@ -6,8 +6,12 @@ const public_users = express.Router();
 
 
 public_users.post("/register", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  if(!req.params.username) return {error: 'Insert a username'}
+  if(!req.params.password) return {error: 'Insert a password'}
+  const username = req.params.username
+  const ttt = users.find(users.username) 
+
+  return res.status(300).json(ttt);
 });
 
 // Get the book list available in the shop
@@ -47,8 +51,8 @@ public_users.get('/title/:title',function (req, res) {
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const filtereredReviews = books[req.params.isbn].reviews
+  return res.status(200).json(filtereredReviews);
 });
 
 module.exports.general = public_users;
