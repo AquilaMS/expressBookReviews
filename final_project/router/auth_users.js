@@ -3,7 +3,10 @@ const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
 const regd_users = express.Router();
 
-let users = [{username:'aquila', password:'123456'}];
+let users = [
+    {username:'aquila', password:'123456'},
+    {username:'carlos', password:'123456'},
+];
 const SECRET = 'fingerprint_customer'
 
 const isValid = (username)=>{ //returns boolean
@@ -11,7 +14,7 @@ const isValid = (username)=>{ //returns boolean
 }
 
 const authenticatedUser = (username,password)=>{ //returns boolean
-    const checkUser = users.filter(item=>item.username == username && item.password == password)
+    const checkUser = users.filter(item=> item.username == username && item.password == password)
     if(checkUser.length ==1 ){
         return true
     }
@@ -44,7 +47,12 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review 
 regd_users.put("/auth/review/:isbn",  (req, res) => {
-    console.log(req.session)
+    const username = req.session.authorization.username 
+    const bookId = req.params.isbn
+    const review = req.body.review
+    const bookReviews = books[bookId].reviews
+    bookReviews[username] = review
+    console.log(bookReviews)
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
