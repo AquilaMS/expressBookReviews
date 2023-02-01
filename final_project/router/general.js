@@ -21,7 +21,18 @@ public_users.post("/register", (req, res) => {
 
 // Get the book list available in the shop
 public_users.get('/', function (req, res) {
-  return res.status(200).json({ data: books })
+  const allBooks = new Promise((resolve, rejected) => {
+    try {
+      const data = {data:books}
+      resolve(data)
+    }
+    catch (err) {
+      rejected(err)
+    }
+  })
+  allBooks.then((result) => {
+    return res.status(200).json(result);
+  })
 });
 
 // Get book details based on ISBN
@@ -35,7 +46,7 @@ public_users.get('/isbn/:isbn', function (req, res) {
       rejected(err)
     }
   })
-  const result = filtereredBook.then((result) => {
+  filtereredBook.then((result) => {
     return res.status(200).json(result);
   })
 });
