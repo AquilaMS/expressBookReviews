@@ -4,7 +4,7 @@ let books = require("./booksdb.js");
 const regd_users = express.Router();
 
 let users = [{username:'aquila', password:'123456'}];
-const SECRET = 'supersecret'
+const SECRET = 'fingerprint_customer'
 
 const isValid = (username)=>{ //returns boolean
 //write code to check is the username is valid
@@ -19,23 +19,36 @@ const authenticatedUser = (username,password)=>{ //returns boolean
 }
 
 //only registered users can login
-regd_users.post("/", (req,res) => {
-  //Write your code here
-  if(authenticatedUser(req.body.username, req.body.password)){
-    return res.send({
-        token: jwt.sign({username: req.body.username}, SECRET)
-    })
-  }
-  return res.status(300).json({message: "Yet to be implemented"});
+regd_users.post("/login", (req,res) => {
+    const username = req.body.username
+    const password =req.body.password
+   
+     if (!password || !username){
+         return res.status(401).json({error: 'Need login'})
+     } 
+   
+     if(authenticatedUser(username, password)){
+         const token = jwt.sign({
+             data: password
+         }, 'access', { expiresIn: 60 * 60 })
+   
+         req.session.authorization = {
+           token, username
+       }
+       return res.status(200).json({message: "Logged"});
+     }
+     else{
+       return res.status(208).json({error: "Invalid Login. Check username and password"});
+     }
 });
 
-// Add a book review
+// Add a book review 
 regd_users.put("/auth/review/:isbn",  (req, res) => {
-  //Write your code here
+    console.log(req.session)
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
 module.exports.users = users;
-module.exports.regd_users = regd_users; 
+module.exports.authenticatedUser = authenticatedUser
